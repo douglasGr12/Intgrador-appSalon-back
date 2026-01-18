@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "venta")
@@ -19,12 +20,12 @@ public class Venta {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cli_id", nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Cliente cliente;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "emp_id", nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Empleado empleado;
 
     @Column(nullable = false)
@@ -35,11 +36,11 @@ public class Venta {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "negocio_id", nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Negocio negocio;
 
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
-    @JsonIgnore // 🔥 rompe ciclo infinito
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // 🔥 rompe ciclo infinito
     private List<DetalleVenta> detalles;
 
     public Venta() {}

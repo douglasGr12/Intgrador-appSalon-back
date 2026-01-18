@@ -1,11 +1,17 @@
 package com.appsalon.backend.api.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Map;
 
 import java.util.List;
 
-
+import com.appsalon.backend.api.DTO.LoginRequest;
+import com.appsalon.backend.api.DTO.LoginResponse;
 import com.appsalon.backend.api.Entities.*;
 import com.appsalon.backend.api.Repositories.*;
 
@@ -36,7 +42,7 @@ public class UsuarioController {
     @PostMapping
     public Usuario createUser(@RequestBody Usuario usuario) {
     
-        System.out.println("USUARIO: " + usuario.getUsu_email());
+        System.out.println("USUARIO: " + usuario.getUsuEmail());
     
         if (usuario.getRol() == null) {
             throw new RuntimeException("ROL ES NULL");
@@ -66,7 +72,7 @@ public class UsuarioController {
 
         usuario.setUsu_nombre(usuarioDetails.getUsu_nombre());
         usuario.setUsu_apellido(usuarioDetails.getUsu_apellido());
-        usuario.setUsu_email(usuarioDetails.getUsu_email());
+        usuario.setUsuEmail(usuarioDetails.getUsuEmail());
         usuario.setUsu_telefono(usuarioDetails.getUsu_telefono());
         usuario.setUsu_direccion(usuarioDetails.getUsu_direccion());
         usuario.setUsu_clave(usuarioDetails.getUsu_clave());
@@ -85,5 +91,34 @@ public class UsuarioController {
 
         usuarioRepository.delete(usuario);
         return "Usuario eliminado con éxito";
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+
+        Usuario usuario = usuarioRepository
+            .findByUsuEmail(request.getEmail())
+            .orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas")
+            );
+
+        // comparación directa (PLANO)
+        if (!usuario.getUsu_clave().equals(request.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas");
+        }
+
+        if (!"ACTIVO".equals(usuario.getUsu_estado())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuario inactivo");
+        }
+
+        return ResponseEntity.ok(
+            new LoginResponse(
+                usuario.getUsu_id(),
+                usuario.getUsu_nombre(),
+                usuario.getUsuEmail(),
+                usuario.getRol().getRol_id(),
+                usuario.getRol().getRol_nombre()
+            )
+        );
     }
 }

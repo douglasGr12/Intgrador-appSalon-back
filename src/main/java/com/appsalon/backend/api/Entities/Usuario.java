@@ -1,8 +1,8 @@
 package com.appsalon.backend.api.Entities;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "usuario")
@@ -19,11 +19,12 @@ public class Usuario {
     @Column(nullable = false)
     private String usu_apellido;
 
-    @Column(nullable = false, unique = true)
-    private String usu_email;
+   @Column(name = "usu_email", nullable = false, unique = true)
+    @JsonProperty("usu_email")
+    private String usuEmail;
 
     @Column(nullable = false)
-    @JsonIgnore // 🔥 NUNCA exponer contraseña
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String usu_clave;
 
     @Column(nullable = false)
@@ -36,7 +37,7 @@ public class Usuario {
     // 🔥 CLAVE: romper ciclo
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rol_id", nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Rol rol;
 
     public Usuario() {}
@@ -67,13 +68,14 @@ public class Usuario {
         this.usu_apellido = usu_apellido;
     }
 
-    public String getUsu_email() {
-        return usu_email;
+    public String getUsuEmail() {
+        return usuEmail;
+    }
+    
+    public void setUsuEmail(String usuEmail) {
+        this.usuEmail = usuEmail;
     }
 
-    public void setUsu_email(String usu_email) {
-        this.usu_email = usu_email;
-    }
 
     public String getUsu_estado() {
         return usu_estado;

@@ -2,8 +2,8 @@ package com.appsalon.backend.api.Entities;
 
 import jakarta.persistence.*;
 import java.time.LocalTime;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "negocio")
@@ -24,7 +24,7 @@ public class Negocio {
     private LocalTime negocio_cierre;
 
     @Lob
-    @JsonIgnore // 🔥 evita enviar blobs enormes por la API
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // 🔥 evita enviar blobs enormes por la API
     private byte[] negocio_logo;
 
     @Column(columnDefinition = "TEXT")
