@@ -29,4 +29,5 @@ public interface HistorialServicioRepository extends JpaRepository<HistorialServ
         @Param("inicio") LocalDate inicio,
         @Param("fin") LocalDate fin
     );
+    
 }
